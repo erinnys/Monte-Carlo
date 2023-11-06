@@ -14,13 +14,14 @@ lab=['Ar','He']
 box=np.array([[100],[100]])
 rad=0.5
 b=1
-step=2000
-interac=[[10,5],[5,1]]
-epsilon=10
+step=20000
+sigma=[10,4]
+epsilon=[4,2]
+
 
 
 class model:
-    def __init__(self,size,num,rad,b,config,lab,inter):
+    def __init__(self,size,num,rad,b,config,lab,sigma,epsilon):
         self.size=size
         self.num=num
         self.rad=rad
@@ -31,7 +32,8 @@ class model:
             self.tot+=i
         self.lab=lab
         self.perio='off'
-        self.inter=inter
+        self.sigma=sigma
+        self.epsilon=epsilon
         
     def dist(self,i,j,k,z):
         return np.linalg.norm(self.config[i].T[j]-self.config[k].T[z])
@@ -112,7 +114,7 @@ class model:
                                 if i==k and j==z:
                                     pass
                                 else:
-                                    utot=utot+4*epsilon*((self.inter[i][k]/self.dist(i,j,k,z))**12-(self.inter[i][k]/self.dist(i,j,k,z))**6)
+                                    utot=utot+4*((epsilon[i]*epsilon[k])**0.5)*((((self.sigma[i]+self.sigma[k])/2)/self.dist(i,j,k,z))**12-(((self.sigma[i]+self.sigma[k])/2)/self.dist(i,j,k,z))**6)
                 return utot/2
         else:
             return 0
@@ -140,7 +142,7 @@ class model:
     #隨機取樣與移動
     
     
-mod=model(box,numbsit,rad,b,[],lab,interac)
+mod=model(box,numbsit,rad,b,[],lab,sigma,epsilon)
 mod.initconfig()
 mod.picture(0)
 eig=[]
@@ -151,4 +153,4 @@ for i in range(step):
 
 plt.figure()
 plt.plot(range(step+1-50),eig[50:])
-        
+mod.picture(step)
