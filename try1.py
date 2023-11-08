@@ -9,15 +9,22 @@ This is a temporary script file.
 import numpy as np
 import matplotlib.pyplot as plt
 
-numbsit=[5,5]
-lab=['Ar','He']
-box=np.array([[100],[100]])
-rad=0.5
-b=1
-step=20000
-sigma=[10,4]
-epsilon=[4,2]
+# sigma  angstrom
+# epsilon  kJ/mol
+#Boltzmann constant  kJ/mol⋅K
 
+Ar={'sigma':3.401,'epsilon':0.978638}
+He={'sigma':2.556,'epsilon':0.08368}
+bolt=8.314462618e-3  
+
+numbsit=[269]
+lab=['Ar']
+box=np.array([[215.4434],[215.4434],[215.4434]])
+rad=1.88
+b=8.314462618e-3*273
+step=10000
+sigma=[3.401]
+epsilon=[0.978638]
 
 
 class model:
@@ -36,7 +43,7 @@ class model:
         self.epsilon=epsilon
         
     def dist(self,i,j,k,z):
-        return np.linalg.norm(self.config[i].T[j]-self.config[k].T[z])
+        return round(np.linalg.norm(self.config[i].T[j]-self.config[k].T[z]),5)
     
     def initconfig(self):
         self.config=[]
@@ -140,7 +147,29 @@ class model:
             else:
                 self.config[cho1][cho3,cho2]=self.config[cho1][cho3,cho2]-(cho0*steplength*self.size[cho3])/100
     #隨機取樣與移動
-    
+    def rdf(self,lim):
+        
+        step=0.1
+        for i in range(len(self.lab)):
+            for k in range(len(self.lab)):
+                data=np.zeros(10*lim)
+                for z in range(len(self.config[i].T)):
+                    dist=[]
+                    for j in range(len(self.config[k].T)):
+                        dist.append(self.dist(i,z,k,j))
+                    for a in range(len(data)):
+                        for b in dist:
+                            if b>a*step and b<a*step+step:
+                                data[a]=data[a]+1
+                for c in range(len(data)):
+                    data[c]=data[c]/((4*np.pi*(((c+1)*step))**3-(c*step)**3)/3)
+                data=data/len(self.config[i].T)
+                data[0]=0
+                plt.figure()
+                plt.plot(np.arange(0,10,0.1),data)
+                
+                
+            
     
 mod=model(box,numbsit,rad,b,[],lab,sigma,epsilon)
 mod.initconfig()
@@ -148,9 +177,9 @@ mod.picture(0)
 eig=[]
 eig.append(mod.configE(1))
 for i in range(step):
-    mod.ranchoiceandmove(3)
+    mod.ranchoiceandmove(10)
     eig.append(mod.configE(1))
 
 plt.figure()
-plt.plot(range(step+1-50),eig[50:])
+plt.plot(range(step+1),eig)
 mod.picture(step)
