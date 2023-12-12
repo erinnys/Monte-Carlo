@@ -134,8 +134,9 @@ class model:
             cho1=np.random.randint(0,len(self.config))
             cho2=np.random.randint(0,len(self.config[cho1].T))
             cho3=np.random.randint(0,len(self.size))
+            cho4=steplength*float(np.random.rand(),5)
             oldE=self.configE(1)
-            self.config[cho1][cho3,cho2]=self.config[cho1][cho3,cho2]+(cho0*steplength*self.size[cho3])/100
+            self.config[cho1][cho3,cho2]=self.config[cho1][cho3,cho2]+(cho0*cho4*self.size[cho3])/100
             if self.checkconfig():
                 if np.exp(-self.b*(self.configE(1)-oldE))>=1:
                     break
@@ -143,9 +144,9 @@ class model:
                     if np.random.random()<np.exp(-self.b*(self.configE(1)-oldE)):
                         break
                     else:
-                        self.config[cho1][cho3,cho2]=self.config[cho1][cho3,cho2]-(cho0*steplength*self.size[cho3])/100
+                        self.config[cho1][cho3,cho2]=self.config[cho1][cho3,cho2]-(cho0*cho4*self.size[cho3])/100
             else:
-                self.config[cho1][cho3,cho2]=self.config[cho1][cho3,cho2]-(cho0*steplength*self.size[cho3])/100
+                self.config[cho1][cho3,cho2]=self.config[cho1][cho3,cho2]-(cho0*cho4*self.size[cho3])/100
     #隨機取樣與移動
     def rdf(self,lim):
         
